@@ -60,3 +60,5 @@ vae.compile(optimizer='adam', loss=vae_loss, metrics=['acc'])
 vae.fit(X_train, X_train, shuffle=True, epochs=epochs, batch_size=batch_size,
         validation_data=(X_test, X_test))
 vae.save('./vae.h5')
+encoder.save('./encoder.h5')
+decoder.save('./decoder.h5')
