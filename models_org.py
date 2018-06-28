@@ -4,6 +4,7 @@ from keras.layers import GRU, RepeatVector, TimeDistributed, Layer
 from keras.models import Model
 from keras import backend as K
 from keras.utils import plot_model
+import numpy as np
 
 
 input_vec = Input(shape=(120, 35))
@@ -58,10 +59,7 @@ print(vae.summary())
 plot_model(vae, to_file='model.png', show_shapes=True)
 
 
-from featurizer import OneHotFeaturizer
-ohf = OneHotFeaturizer()
-with open('./5k.smi') as f:
-    smiles = [smi.rstrip() for smi in f]
-X = ohf.featurize(smiles)
-
-vae.fit(X, y=None, shuffle=True, epochs=10, batch_size=32)
+from sklearn.model_selection import train_test_split
+X = np.load('./250k.npz')['arr']
+X_train, X_test = train_test_split(X, random_state=0)
+vae.fit(X_train, y=None, shuffle=True, epochs=10, batch_size=256, validation_data=(X_test, None))
