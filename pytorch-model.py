@@ -28,41 +28,39 @@ class VAE(nn.Module):
     def __init__(self, input_len=120):
         super(VAE, self).__init__()
 
-        self.conv1d1 = nn.Conv1d(input_len, out_channels=9, kernel_size=9)
-        self.conv1d2 = nn.Conv1d(in_channels=9, out_channels=9, kernel_size=9)
-        self.conv1d3 = nn.Conv1d(in_channels=9, out_channels=10, kernel_size=11)
+        self.conv1d1 = nn.Conv1d(input_len, 9, kernel_size=9)
+        self.conv1d2 = nn.Conv1d(9, 9, kernel_size=9)
+        self.conv1d3 = nn.Conv1d(9, 11, kernel_size=10)
 
-        self.fc1 = nn.Linear(90, 435)
+        self.fc1 = nn.Linear(110, 435)
         self.fc21 = nn.Linear(435, 292)
         self.fc22 = nn.Linear(435, 292)
 
-        self.gru1 = nn.GRU(501, 200)
-        self.fc5 = nn.Linear(200, 400)
-        self.fc6 = nn.Linear(400, 784)
+        self.fc3 = nn.Linear(292, 435)
+        self.gru = nn.GRU(435, 501, 3, batch_first=True)
 
     def encode(self, x):
-        print(x.size())
         h = F.relu(self.conv1d1(x))
-        print(h.size())
         h = F.relu(self.conv1d2(h))
-        print(h.size())
         h = F.relu(self.conv1d3(h))
-        print(h.size())
-        h = F.relu(self.fc1(h.view(-1, 90)))
+        h = F.relu(self.fc1(h.view(-1, 110)))
         return self.fc21(h), self.fc22(h)
 
     def reparameterize(self, mu, logvar):
         if self.training:
-            std = torch.exp(0.5*logvar)
+            std = torch.exp(0.5 * logvar)
             eps = torch.randn_like(std)
             return eps.mul(std).add_(mu)
         else:
             return mu
 
     def decode(self, z):
-        h4 = F.relu(self.fc4(z))
-        h5 = F.relu(self.fc5(h4))
-        return F.sigmoid(self.fc6(h5))
+        print('z', z.size())
+        h = F.relu(self.fc3(z))
+        print('h', h.size())
+        h = self.gru(h)
+        print('h', h.size())
+        return None
 
     def forward(self, x):
         mu, logvar = self.encode(x)
