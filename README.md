@@ -1,1 +1,1 @@
-# molencoder
+# molecular VAE
