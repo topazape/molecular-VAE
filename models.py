@@ -10,7 +10,9 @@ from torchvision.utils import save_image
 torch.manual_seed(42)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-X = np.load('./5k.npz')['arr']
+#device = torch.device('cpu')
+
+X = np.load('./250k.npz')['arr']
 X_train, X_test = model_selection.train_test_split(X, random_state=42)
 
 train_loader = torch.utils.data.DataLoader(
@@ -55,10 +57,10 @@ class VAE(nn.Module):
             return mu
 
     def decode(self, z):
-        z = z.view(128, 1, 292)
+        z = z.view(-1, 1, 292)
         h = z.repeat(1, 120, 1)
         out, h = self.gru(h)
-        out = F.softmax(self.fc3(out))
+        out = F.softmax(self.fc3(out), dim=1)
         return out
 
     def forward(self, x):
@@ -73,7 +75,7 @@ optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 # Reconstruction + KL divergence losses summed over all elements and batch
 def loss_function(recon_x, x, mu, logvar):
-    BCE = F.binary_cross_entropy(recon_x, x.view(-1, 4200), size_average=False)
+    BCE = F.binary_cross_entropy(recon_x, x, size_average=False)
 
     # see Appendix B from VAE paper:
     # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
@@ -109,15 +111,9 @@ def test(epoch):
     test_loss = 0
     with torch.no_grad():
         for i, data in enumerate(test_loader):
-            data = data.to(device)
+            data = data[0].to(device)
             recon_batch, mu, logvar = model(data)
             test_loss += loss_function(recon_batch, data, mu, logvar).item()
-            if i == 0:
-                n = min(data.size(0), 8)
-                comparison = torch.cat([data[:n],
-                                      recon_batch.view(args.batch_size, 1, 28, 28)[:n]])
-                save_image(comparison.cpu(),
-                         'results/reconstruction_' + str(epoch) + '.png', nrow=n)
 
     test_loss /= len(test_loader.dataset)
     print('====> Test set loss: {:.4f}'.format(test_loss))
@@ -128,7 +124,6 @@ if __name__ == '__main__':
         train(epoch)
         test(epoch)
         with torch.no_grad():
-            sample = torch.randn(64, 20).to(device)
-            sample = model.decode(sample).cpu()
-            save_image(sample.view(64, 1, 28, 28),
-                   'results/sample_' + str(epoch) + '.png')
+            #sample = torch.randn(64, 20).to(device)
+            #sample = model.decode(sample).cpu()
+            pass
