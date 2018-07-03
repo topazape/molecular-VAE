@@ -42,6 +42,8 @@ def main():
             optimizer.step()
             if batch_idx % 100 == 0:
                 print(f'epoch: {epoch}, loss: {loss}')
+    else:
+        torch.save(model.state_dict(), './epoch10.pth.tar')
 
 if __name__ == '__main__':
     main()
