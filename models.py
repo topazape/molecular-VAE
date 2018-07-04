@@ -39,8 +39,11 @@ class VAE(nn.Module):
         z = z.view(-1, 1, 292)
         h = z.repeat(1, 120, 1)
         out, h = self.gru(h)
-        out = F.softmax(self.fc3(out), dim=1)
-        return out
+        # TimeDistributed
+        out_reshape = out.contiguous().view(-1, out.size(-1))
+        y = F.softmax(self.fc3(out_reshape), dim=1)
+        y = y.contiguous().view(-1, 120, 35)
+        return y
 
     def forward(self, x):
         mu, logvar = self.encode(x)
