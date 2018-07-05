@@ -12,13 +12,16 @@ def loss_function(recon_x, x, mu, logvar):
     return BCE + KLD
 
 X = np.load('./data/250k.npz')['arr'].astype(np.float32)
-X_train, X_test = model_selection.train_test_split(X, random_state=1022)
+#X_train, X_test = model_selection.train_test_split(X, random_state=1022)
 
-train = torch.utils.data.TensorDataset(torch.from_numpy(X_train))
+#train = torch.utils.data.TensorDataset(torch.from_numpy(X_train))
+#train_loader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True)
+
+train = torch.utils.data.TensorDataset(torch.from_numpy(X))
 train_loader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True)
 
-test = torch.utils.data.TensorDataset(torch.from_numpy(X_test))
-test_loader = torch.utils.data.DataLoader(test, batch_size=256, shuffle=False)
+#test = torch.utils.data.TensorDataset(torch.from_numpy(X_test))
+#test_loader = torch.utils.data.DataLoader(test, batch_size=256, shuffle=False)
 
 torch.manual_seed(1022)
 epochs = 100
@@ -54,5 +57,5 @@ def test(epoch):
 
 for epoch in range(epochs):
     train(epoch)
-    test(epoch)
+    #test(epoch)
 torch.save(model.state_dict(), 'vae.pth')
