@@ -55,7 +55,8 @@ def test(epoch):
         test_loss += loss_function(recon_batch, data, mu, logvar).item()
     print('test', test_loss / len(test_loader))
 
-for epoch in range(epochs):
+for epoch in range(1, epochs + 1):
     train(epoch)
     #test(epoch)
-torch.save(model.state_dict(), 'vae.pth')
+    if epoch % 20 == 0:
+        torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
