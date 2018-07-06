@@ -24,7 +24,7 @@ class OneHotFeaturizer(object):
     def one_hot_encode(self, smi):
         return np.array([
             self.one_hot_array(self.one_hot_index(x)) for x in self.pad_smi(smi)
-            ])
+            ]).T
 
     def one_hot_decode(self, z):
         z1 = []
