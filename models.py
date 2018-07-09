@@ -16,8 +16,9 @@ class VAE(nn.Module):
         self.fc11 = nn.Linear(435, 2)
         self.fc12 = nn.Linear(435, 2)
 
+        self.fc2 = nn.Linear(2, 2)
         self.gru = nn.GRU(2, 501, 3, batch_first=True)
-        self.fc2 = nn.Linear(501, 120)
+        self.fc3 = nn.Linear(501, 120)
 
     def encode(self, x):
         h = F.relu(self.conv1d1(x))
@@ -37,11 +38,12 @@ class VAE(nn.Module):
             return mu
 
     def decode(self, z):
+        z = F.relu(self.fc2(z))
         z = z.view(z.size(0), 1, z.size(1))
         z = z.repeat(1, 35, 1)
         out, h = self.gru(z)
         out_reshape = out.contiguous().view(-1, out.size(-1))
-        y0 = self.fc2(out_reshape)
+        y0 = self.fc3(out_reshape)
         y = y0.contiguous().view(z.size(0), -1, y0.size(-1))
         y = F.softmax(y, dim=1)
         return y
