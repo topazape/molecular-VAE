@@ -32,19 +32,18 @@ X = np.load('./data/250k-T.npz')['arr'].astype(np.float32)
 #train_loader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True)
 
 train = torch.utils.data.TensorDataset(torch.from_numpy(X))
-train_loader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True)
+train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=False)
 
 #test = torch.utils.data.TensorDataset(torch.from_numpy(X_test))
 #test_loader = torch.utils.data.DataLoader(test, batch_size=256, shuffle=False)
 
 #torch.manual_seed(42)
-epochs = 1
+epochs = 3
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = VAE().to(device)
 model.apply(initialize_weights)
 optimizer = optim.Adam(model.parameters())
-
 
 def train(epoch):
     model.train()

@@ -31,7 +31,7 @@ class VAE(nn.Module):
     def reparametrize(self, mu, logvar):
         if self.training:
             std = torch.exp(0.5 * logvar)
-            eps = 1e-2 * torch.randn_like(std)
+            eps = torch.randn_like(std)
             w = eps.mul(std).add_(mu)
             return w
         else:
