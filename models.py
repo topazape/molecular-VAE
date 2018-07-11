@@ -25,27 +25,25 @@ class VAE(nn.Module):
         h = F.relu(self.conv1d2(h))
         h = F.relu(self.conv1d3(h))
         h = h.view(h.size(0), -1)
-        h = F.relu(self.fc0(h))
+        h = F.selu(self.fc0(h))
         return self.fc11(h), self.fc12(h)
 
     def reparametrize(self, mu, logvar):
         if self.training:
             std = torch.exp(0.5 * logvar)
-            eps = torch.randn_like(std)
+            eps = 1e-2 * torch.randn_like(std)
             w = eps.mul(std).add_(mu)
             return w
         else:
             return mu
 
     def decode(self, z):
-        z = F.relu(self.fc2(z))
-        z = z.view(z.size(0), 1, z.size(1))
-        z = z.repeat(1, 35, 1)
+        z = F.selu(self.fc2(z))
+        z = z.view(z.size(0), 1, z.size(-1)).repeat(1, 35, 1)
         out, h = self.gru(z)
         out_reshape = out.contiguous().view(-1, out.size(-1))
-        y0 = self.fc3(out_reshape)
-        y = y0.contiguous().view(z.size(0), -1, y0.size(-1))
-        y = F.softmax(y, dim=1)
+        y0 = F.softmax(self.fc3(out_reshape), dim=1)
+        y = y0.contiguous().view(out.size(0), -1, y0.size(-1))
         return y
 
     def forward(self, x):
