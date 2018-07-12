@@ -8,41 +8,21 @@ import h5py
 from models import VAE
 
 
-def initialize_weights(m):
-    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv1d):
-        nn.init.xavier_uniform_(m.weight.data)
-    elif isinstance(m, nn.GRU):
-        for weights in m.all_weights:
-            for weight in weights:
-                if len(weight.size()) > 1:
-                    nn.init.xavier_uniform_(weight.data)
-
 def loss_function(recon_x, x, mu, logvar):
     BCE = F.binary_cross_entropy(recon_x, x, size_average=False)
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
     return BCE + KLD
 
-#h5f = h5py.File('./data/zinc12.h5')
-#X = h5f['data_train'][:]
-#X = X.transpose(0, 2, 1)
-X = np.load('./data/250k-T.npz')['arr'].astype(np.float32)
-#X_train, X_test = model_selection.train_test_split(X, random_state=1022)
-
-#train = torch.utils.data.TensorDataset(torch.from_numpy(X_train))
-#train_loader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True)
+X = np.load('./data/250k.npz')['arr'].astype(np.float32)
 
 train = torch.utils.data.TensorDataset(torch.from_numpy(X))
 train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=False)
 
-#test = torch.utils.data.TensorDataset(torch.from_numpy(X_test))
-#test_loader = torch.utils.data.DataLoader(test, batch_size=256, shuffle=False)
-
 #torch.manual_seed(42)
-epochs = 3
+epochs = 30
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = VAE().to(device)
-model.apply(initialize_weights)
 optimizer = optim.Adam(model.parameters())
 
 def train(epoch):
