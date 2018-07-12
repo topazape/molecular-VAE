@@ -13,11 +13,11 @@ class VAE(nn.Module):
         self.conv1d2 = nn.Conv1d(9, 9, kernel_size=9)
         self.conv1d3 = nn.Conv1d(9, 10, kernel_size=11)
         self.fc0 = nn.Linear(90, 435)
-        self.fc11 = nn.Linear(435, 292)
-        self.fc12 = nn.Linear(435, 292)
+        self.fc11 = nn.Linear(435, 2)
+        self.fc12 = nn.Linear(435, 2)
 
-        self.fc2 = nn.Linear(292, 292)
-        self.gru = nn.GRU(292, 501, 3, batch_first=True)
+        self.fc2 = nn.Linear(2, 2)
+        self.gru = nn.GRU(2, 501, 3, batch_first=True)
         self.fc3 = nn.Linear(501, 35)
 
     def encode(self, x):

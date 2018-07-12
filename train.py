@@ -52,5 +52,7 @@ def test(epoch):
 for epoch in range(1, epochs + 1):
     train(epoch)
     #test(epoch)
-    if epoch % 1 == 0:
-        torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
+    #if epoch % 1 == 0:
+    #    torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
+else:
+    torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
