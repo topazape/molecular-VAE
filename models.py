@@ -5,9 +5,9 @@ import torch.utils.data
 from torch import nn, optim
 from torch.nn import functional as F
 
-class VAE(nn.Module):
+class MolecularVAE(nn.Module):
     def __init__(self):
-        super(VAE, self).__init__()
+        super(MolecularVAE, self).__init__()
 
         self.conv1d1 = nn.Conv1d(120, 9, kernel_size=9)
         self.conv1d2 = nn.Conv1d(9, 9, kernel_size=9)

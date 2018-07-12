@@ -5,7 +5,7 @@ import torch.utils.data
 from torch import nn, optim
 import torch.nn.functional as F
 import h5py
-from models import VAE
+from models import MolecularVAE
 
 
 def loss_function(recon_x, x, mu, logvar):
@@ -22,7 +22,7 @@ train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=False)
 epochs = 30
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-model = VAE().to(device)
+model = MolecularVAE().to(device)
 optimizer = optim.Adam(model.parameters())
 
 def train(epoch):
