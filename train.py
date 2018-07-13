@@ -19,7 +19,7 @@ train = torch.utils.data.TensorDataset(torch.from_numpy(X))
 train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=False)
 
 #torch.manual_seed(42)
-epochs = 30
+epochs = 200
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = MolecularVAE().to(device)

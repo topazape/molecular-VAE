@@ -24,7 +24,7 @@ class OneHotFeaturizer(object):
     def one_hot_encode(self, smi):
         return np.array([
             self.one_hot_array(self.one_hot_index(x)) for x in self.pad_smi(smi)
-            ]).T
+            ])
 
     def one_hot_decode(self, z):
         z1 = []
@@ -35,3 +35,6 @@ class OneHotFeaturizer(object):
                 s += self.charset[oh]
             z1.append([s.strip()])
         return z1
+
+    def decode_smiles_from_index(self, vec):
+        return ''.join(map(lambda x: CHARSET[x], vec)).strip()
