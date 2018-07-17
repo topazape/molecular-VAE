@@ -16,10 +16,10 @@ def loss_function(recon_x, x, mu, logvar):
 X = np.load('./data/250k.npz')['arr'].astype(np.float32)
 
 train = torch.utils.data.TensorDataset(torch.from_numpy(X))
-train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=False)
+train_loader = torch.utils.data.DataLoader(train, batch_size=250, shuffle=True)
+torch.manual_seed(42)
 
-#torch.manual_seed(42)
-epochs = 200
+epochs = 100
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 model = MolecularVAE().to(device)
@@ -39,6 +39,7 @@ def train(epoch):
         if batch_idx % 100 == 0:
             print(f'{epoch} / {batch_idx}\t{loss:.4f}')
     print('train', train_loss / len(train_loader.dataset))
+    return train_loss / len(train_loader.dataset)
 
 def test(epoch):
     model.eval()
@@ -50,9 +51,7 @@ def test(epoch):
     print('test', test_loss / len(test_loader))
 
 for epoch in range(1, epochs + 1):
-    train(epoch)
-    #test(epoch)
-    #if epoch % 1 == 0:
-    #    torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
-else:
-    torch.save(model.state_dict(), './models/vae-{}.pth'.format(epoch))
+    train_loss = train(epoch)
+    if epoch % 1 == 0:
+        torch.save(model.state_dict(),
+                './ref/vae-{:03d}-{}.pth'.format(epoch, train_loss))

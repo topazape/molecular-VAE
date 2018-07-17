@@ -31,7 +31,7 @@ class MolecularVAE(nn.Module):
     def reparametrize(self, mu, logvar):
         if self.training:
             std = torch.exp(0.5 * logvar)
-            eps = torch.randn_like(std)
+            eps = 1e-2 * torch.randn_like(std)
             w = eps.mul(std).add_(mu)
             return w
         else:
@@ -42,7 +42,7 @@ class MolecularVAE(nn.Module):
         z = z.view(z.size(0), 1, z.size(-1)).repeat(1, 120, 1)
         out, h = self.gru(z)
         out_reshape = out.contiguous().view(-1, out.size(-1))
-        y0 = F.softmax(self.fc3(out_reshape))
+        y0 = F.softmax(self.fc3(out_reshape), dim=1)
         y = y0.contiguous().view(out.size(0), -1, y0.size(-1))
         return y
 
