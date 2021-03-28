@@ -9,10 +9,12 @@ class MolecularVAE(nn.Module):
     def __init__(self):
         super(MolecularVAE, self).__init__()
 
-        self.conv1d1 = nn.Conv1d(120, 9, kernel_size=9)
+        # The input filter dim should be 35
+        #  corresponds to the size of CHARSET
+        self.conv1d1 = nn.Conv1d(35, 9, kernel_size=9)  
         self.conv1d2 = nn.Conv1d(9, 9, kernel_size=9)
         self.conv1d3 = nn.Conv1d(9, 10, kernel_size=11)
-        self.fc0 = nn.Linear(90, 435)
+        self.fc0 = nn.Linear(940, 435)
         self.fc11 = nn.Linear(435, 292)
         self.fc12 = nn.Linear(435, 292)
 
