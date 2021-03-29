@@ -29,10 +29,10 @@ def train(epoch):
     model.train()
     train_loss = 0
     for batch_idx, data in enumerate(train_loader):
-        data = data[0].to(device)
+        data = data[0].transpose(1,2).to(device)
         optimizer.zero_grad()
         recon_batch, mu, logvar = model(data)
-        loss = loss_function(recon_batch, data, mu, logvar)
+        loss = loss_function(recon_batch, data.transpose(1,2), mu, logvar)
         loss.backward()
         train_loss += loss
         optimizer.step()
@@ -45,9 +45,9 @@ def test(epoch):
     model.eval()
     test_loss = 0
     for batch_idx, data in enumerate(test_loader):
-        data = data[0].to(device)
+        data = data[0].transpose(1,2).to(device)
         recon_batch, mu, logvar = model(data)
-        test_loss += loss_function(recon_batch, data, mu, logvar).item()
+        test_loss += loss_function(recon_batch, data.transpose(1,2), mu, logvar).item()
     print('test', test_loss / len(test_loader))
 
 for epoch in range(1, epochs + 1):
